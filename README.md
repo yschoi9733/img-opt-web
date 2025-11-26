@@ -2,6 +2,8 @@
 
 React + Vite + TypeScript + Tailwind 기반의 간단한 이미지 리사이징 프론트엔드입니다. 이미지를 업로드하면 백엔드가 413x531(여권 사진 규격)로 변환한 URL을 반환하며, 프론트는 그 URL을 그대로 표시합니다.
 
+![alt text](image.png)
+
 ## ✨ 기술 스택
 
 - **Framework**: [React](https://react.dev/)
