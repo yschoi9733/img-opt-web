@@ -85,3 +85,57 @@ yarn preview
 - `yarn preview`: 빌드 결과 로컬 미리보기
 - `yarn lint`: ESLint 실행
 - `yarn format`: Prettier 포맷팅
+
+## 🚀 배포
+
+### 네이버 클라우드 Web 서버 배포
+
+이 프로젝트는 네이버 클라우드 플랫폼의 Web 서버에 배포되어 있습니다.
+
+#### 배포 방법
+
+1. **SSL VPN 연결**
+   - 네이버 클라우드 콘솔에서 SSL VPN 클라이언트 다운로드 및 설치
+   - VPN 연결 후 내부 네트워크 접근 가능
+
+2. **프로덕션 빌드**
+
+   ```bash
+   yarn build
+   ```
+
+3. **서버로 파일 전송 (SCP)**
+
+   ```bash
+   scp -r .\dist\* root@10.0.10.6:/var/www/html/
+   ```
+
+4. **배포 확인**
+   - 브라우저에서 서버 주소로 접속하여 확인
+   - Nginx/Apache 설정에 따라 정적 파일 서빙 확인
+
+5. **Nginx 파일 업로드 용량 설정 (필수)**
+
+   ```bash
+   # /etc/nginx/nginx.conf 편집
+   sudo vi /etc/nginx/nginx.conf
+
+   # http 블록 안에 추가
+   client_max_body_size 50M;
+
+   # Nginx 재시작
+   sudo systemctl restart nginx
+   ```
+
+#### 서버 정보
+
+- **내부 IP**: `10.0.10.6`
+- **웹 루트**: `/var/www/html/`
+- **접근 방식**: SSL VPN을 통한 내부 네트워크 접속
+- **Nginx 설정**: 파일 업로드 최대 용량 50MB
+
+#### 주의사항
+
+- 백엔드 API(`http://localhost:3000/api`)는 `src/api/http.ts`에서 실제 서버 주소로 변경 필요
+- 프로덕션 환경에서는 리버스 프록시(`/api`) 설정 권장
+- 프론트(40MB) + 백엔드(50MB) 용량 제한이 일치하도록 Nginx 설정 필수
