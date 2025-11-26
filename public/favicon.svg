@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="이미지 리사이징">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="url(#bg)"/>
+  <!-- camera top bar -->
+  <rect x="22" y="16" width="20" height="8" rx="4" fill="#fff" opacity="0.95"/>
+  <!-- camera body -->
+  <rect x="12" y="22" width="40" height="26" rx="6" fill="#fff" opacity="0.98"/>
+  <!-- lens -->
+  <circle cx="32" cy="35" r="9" fill="#2563EB"/>
+  <!-- subtle resize arrows -->
+  <path d="M10 10 l10 0 l-3 -3 M54 54 l-10 0 l3 3" stroke="#ffffff" stroke-opacity="0.7" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>
