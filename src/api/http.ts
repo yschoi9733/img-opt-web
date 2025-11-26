@@ -2,8 +2,7 @@
 import axios from 'axios';
 
 export const wasInstance = axios.create({
-  // baseURL: '/api', // Nginx Proxy 경로
-  baseURL: 'http://localhost:3000/api', // 개발용 백엔드 서버 경로
+  baseURL: '/api', // 개발(dev) 프록시 및 프로덕션 리버스 프록시 공통 경로
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
