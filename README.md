@@ -2,7 +2,14 @@
 
 React + Vite + TypeScript + Tailwind 기반의 간단한 이미지 리사이징 프론트엔드입니다. 이미지를 업로드하면 백엔드가 413x531(여권 사진 규격)로 변환한 URL을 반환하며, 프론트는 그 URL을 그대로 표시합니다.
 
-![alt text](image.png)
+![UI 스크린샷](image.png)
+
+## ✅ 핵심 기능
+
+- 여권 사진 규격 413x531로 자동 변환
+- 최대 40MB 업로드 지원(JPG/PNG/WebP)
+- 업로드 즉시 미리보기, 변환 URL 표시/복사
+- 업로드 중 파일 입력 비활성화, 명확한 에러 알림
 
 ## ✨ 기술 스택
 
@@ -23,13 +30,25 @@ React + Vite + TypeScript + Tailwind 기반의 간단한 이미지 리사이징 
 
 ## 🔌 백엔드 연동
 
-- Axios 기본 경로는 `src/api/http.ts`에서 설정합니다.
-  - 기본값: `http://localhost:3000/api`
-  - 리버스 프록시 사용 시 `'/api'`로 교체해도 됩니다.
-- 업로드 엔드포인트: `POST /upload`
-  - 폼 필드명: `image` (백엔드 multer 설정과 일치해야 함)
-  - 응답 예시 (`src/api/upload.ts`의 `UploadResponse`):
-    - `optimizedUrl`: 최종 변환 이미지 URL (예: `...?type=u&w=413&h=531&quality=100`)
+- 기본 경로: `'/api'` (`src/api/http.ts`)
+- 라우팅
+  - 개발: Vite dev server 프록시(`/api → http://localhost:3000`)
+  - 운영: 웹 서버(Nginx)에서 `/api` 리버스 프록시
+- 엔드포인트
+  - `POST /upload` (multipart/form-data, 필드 `image`)
+  - 응답에 `optimizedUrl` 포함됨 — 상세 명세는 아래 "API 명세" 참조
+
+### API 명세(스펙) 요약
+
+- 요청: `multipart/form-data`로 `image` 필드 필수
+- 응답 필드: `optimizedUrl`, `fileKey`, `originalUrl`, `appliedOptions`, `message`
+- 사용 규칙: 프론트는 `optimizedUrl`을 그대로 표시/복사만 수행 (URL 수정 없음)
+- 예시: `...?type=u&w=413&h=531&quality=100`
+
+### 프록시 구성
+
+- 개발: 이미 `vite.config.ts`에 `/api` 프록시가 설정되어 있어 CORS 없이 동작합니다.
+- 운영: 웹 서버(Nginx)에서 동일 경로(`/api`)로 백엔드 WAS에 프록시하도록 설정하세요.
 
 ## ⚙️ 프론트 동작 요약
 
@@ -138,6 +157,18 @@ yarn preview
 
 #### 주의사항
 
-- 백엔드 API(`http://localhost:3000/api`)는 `src/api/http.ts`에서 실제 서버 주소로 변경 필요
-- 프로덕션 환경에서는 리버스 프록시(`/api`) 설정 권장
+- 프론트는 항상 `/api`로 호출합니다. 운영 환경에서 웹 서버 리버스 프록시를 통해 백엔드로 전달되도록 설정하세요.
 - 프론트(40MB) + 백엔드(50MB) 용량 제한이 일치하도록 Nginx 설정 필수
+
+## 🧩 문제 해결 (Troubleshooting)
+
+- 413 Request Entity Too Large: 파일이 40MB를 초과했거나 Nginx `client_max_body_size` 미설정
+- 400 Bad Request: 잘못된 FormData(필드명 불일치: `image`) 또는 손상된 파일
+- 500 Internal Server Error: WAS 내부 오류. 서버 로그 확인 후 재시도
+- 업로드 지연/타임아웃: 네트워크 품질 저하 또는 파일이 매우 큼 → 다시 시도하거나 파일 크기 축소
+
+## 🔐 운영 팁
+
+- CORS: 같은 도메인/프록시를 사용하면 단순화 가능
+- 캐시: 최종 변환 이미지는 CDN(Image Optimizer)에서 캐시되므로 프론트 캐시 제어는 최소화
+- 접근: 내부망 배포 시 SSL VPN 연결 필수 (문서의 배포 단계 참고)
